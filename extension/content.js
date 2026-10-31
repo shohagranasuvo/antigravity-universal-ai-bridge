@@ -1,4 +1,4 @@
-const BRIDGE_VERSION = "2.4";
+const BRIDGE_VERSION = "2.5";
 
 const PROVIDERS = {
     "gemini.google.com": {
@@ -85,7 +85,7 @@ statusLabel.style.cssText = `
 `;
 
 const watermarkLabel = document.createElement('div');
-watermarkLabel.innerText = `By Shohag Rana Suvo • Credit: Trignod.ai (v${BRIDGE_VERSION})`;
+watermarkLabel.innerText = `Powered by Shohag Rana Suvo • v${BRIDGE_VERSION}`;
 watermarkLabel.style.cssText = `
   font-size: 10px;
   font-weight: 500;

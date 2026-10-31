@@ -1,6 +1,6 @@
 {
   "name": "antigravity-universal-ai-bridge",
-  "version": "2.4.0",
+  "version": "2.5.0",
   "description": "Connect Google Antigravity IDE & CLI with Web AI (Gemini, Claude, ChatGPT, DeepSeek). Fixed & Enhanced by Shohag Rana Suvo.",
   "private": false,
   "type": "commonjs",

@@ -100,9 +100,9 @@ agy mcp add gemini-web-pro "$(which node)" "/absolute/path/to/gemini-bridge/exte
    * **DeepSeek**: [https://chat.deepseek.com](https://chat.deepseek.com)
 2. Look at the floating pill button at the top center of the page:
    > **⚪ Click to dedicate (Gemini) to Antigravity**
-   > *By Shohag Rana Suvo • Credit: Trignod.ai (v2.4)*
+   > *Powered by Shohag Rana Suvo • v2.5*
 3. Click the floating button so it turns **Green**:
-   > **🟢 (Gemini) Connected to Antigravity (v2.4)**
+   > **🟢 (Gemini) Connected to Antigravity (v2.5)**
 4. In **Antigravity IDE or CLI**, simply ask your agent to perform any task or consult the web bridge:
    * *"Use gemini-web-pro to implement feature X"*
    * *"Consult the web bridge to debug this file"*
