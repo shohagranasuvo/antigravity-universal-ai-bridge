@@ -350,8 +350,13 @@ function connectBridge() {
             const data = JSON.parse(event.data);
 
             if (data.type === 'replaced') {
-                // Keep auto-listening on standby in case failover switches back
+                // Another tab became active; go into standby and DO NOT reconnect automatically in a loop!
+                isTabDedicated = false;
                 clearTimeout(retryTimer);
+                if (ws) {
+                    try { ws.close(); } catch (e) {}
+                    ws = null;
+                }
                 updateUI('standby');
                 return;
             }
