@@ -1,7 +1,7 @@
 {
   "name": "antigravity-universal-ai-bridge",
-  "version": "2.5.0",
-  "description": "Connect Google Antigravity IDE & CLI with Web AI (Gemini, Claude, ChatGPT, DeepSeek). Fixed & Enhanced by Shohag Rana Suvo.",
+  "version": "2.6.0",
+  "description": "Zero-Click Auto-Connect Google Antigravity IDE & CLI with Web AI (Gemini, Claude, ChatGPT, DeepSeek) with Auto Tab Launch & Model/Provider Failover. Powered by Shohag Rana Suvo.",
   "private": false,
   "type": "commonjs",
   "license": "GPL-3.0-or-later",
@@ -29,10 +29,12 @@
     "chatgpt",
     "deepseek",
     "ai-bridge",
+    "auto-connect",
+    "failover",
     "shohag-rana-suvo"
   ],
   "scripts": {
-    "check": "node --check extension/bridge.mjs && node --check extension/content.js && node -e \"JSON.parse(require('fs').readFileSync('extension/manifest.json','utf8'));console.log('manifest ok')\""
+    "check": "node --check extension/bridge.mjs && node --check extension/content.js && node --check extension/background.js && node -e \"JSON.parse(require('fs').readFileSync('extension/manifest.json','utf8'));console.log('manifest ok')\""
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.32.1",

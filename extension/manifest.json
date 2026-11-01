@@ -1,9 +1,24 @@
 {
     "manifest_version": 3,
     "name": "Antigravity Universal AI Bridge — By Shohag Rana Suvo",
-    "version": "2.5.0",
+    "version": "2.6.0",
     "author": "Shohag Rana Suvo",
-    "description": "Connect Google Antigravity IDE & CLI with Web AI (Gemini, Claude, ChatGPT, DeepSeek). Powered by Shohag Rana Suvo.",
+    "description": "Zero-click auto-connect Google Antigravity IDE & CLI with Web AI (Gemini, Claude, ChatGPT, DeepSeek) with auto tab launch & rate-limit model/provider failover. Powered by Shohag Rana Suvo.",
+    "permissions": [
+        "tabs",
+        "alarms",
+        "storage"
+    ],
+    "host_permissions": [
+        "https://gemini.google.com/*",
+        "https://claude.ai/*",
+        "https://chatgpt.com/*",
+        "https://chat.openai.com/*",
+        "https://chat.deepseek.com/*"
+    ],
+    "background": {
+        "service_worker": "background.js"
+    },
     "content_scripts": [{
         "matches": [
             "https://gemini.google.com/*",
@@ -12,7 +27,8 @@
             "https://chat.openai.com/*",
             "https://chat.deepseek.com/*"
         ],
-        "js": ["content.js"]
+        "js": ["content.js"],
+        "run_at": "document_idle"
     }],
     "icons": {
         "16": "icons/icon16.png",
@@ -25,6 +41,6 @@
             "48": "icons/icon48.png",
             "128": "icons/icon128.png"
         },
-        "default_title": "Antigravity AI Bridge — Powered by Shohag Rana Suvo"
+        "default_title": "Antigravity AI Bridge (v2.6) — Auto-Connect Powered by Shohag Rana Suvo"
     }
 }
