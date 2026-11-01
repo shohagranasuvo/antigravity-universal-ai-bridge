@@ -152,6 +152,11 @@ wss.on("connection", (ws) => {
                 logToFile(`Tab auto-registered: ${ws.providerName} (${parsed.url}) model=${ws.currentModel}`);
 
                 if (browserSocket && browserSocket !== ws && browserSocket.readyState === 1) {
+                    // Do not disconnect a tab that is actively processing a prompt!
+                    if (sessionState.isProcessingPrompt) {
+                        logToFile(`Ignoring connection attempt from ${ws.providerName} because another tab (${sessionState.activeProvider}) is busy.`);
+                        return;
+                    }
                     try {
                         browserSocket.send(JSON.stringify({ type: "replaced" }));
                         browserSocket.close();
@@ -367,9 +372,11 @@ async function queryConnectedTab(bundle) {
         sessionState.lastChatKey = chatInfo.chatKey;
     }
 
+    sessionState.isProcessingPrompt = true;
     return await new Promise((resolve) => {
         const timeoutTimer = setTimeout(() => {
             cleanup();
+            sessionState.isProcessingPrompt = false;
             logToFile("Timed out after 115s waiting for browser reply.");
             resolve({
                 reply: `Error: Timed out after 115s waiting for browser reply from ${chatInfo.chatKey}.`,
@@ -385,6 +392,7 @@ async function queryConnectedTab(bundle) {
                     return;
                 }
                 if (parsed.reply !== undefined) {
+                    sessionState.isProcessingPrompt = false;
                     logToFile(`Received reply from browser (${parsed.reply.length} chars, rateLimited=${parsed.rateLimited})`);
                     cleanup();
                     resolve({
@@ -394,6 +402,7 @@ async function queryConnectedTab(bundle) {
                     });
                 }
             } catch (e) {
+                sessionState.isProcessingPrompt = false;
                 logToFile(`Failed to parse browser reply: ${e.message}`);
                 cleanup();
                 resolve({
@@ -404,6 +413,7 @@ async function queryConnectedTab(bundle) {
         };
 
         const onClose = () => {
+            sessionState.isProcessingPrompt = false;
             logToFile("Browser tab disconnected while generating response.");
             cleanup();
             resolve({
