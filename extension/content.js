@@ -5,6 +5,13 @@
  * Author: Shohag Rana Suvo (https://github.com/shohagranasuvo)
  */
 
+(() => {
+if (window.__ANTIGRAVITY_BRIDGE_LOADED__) {
+    console.log("[AntigravityBridge] Already loaded in this tab. Skipping duplicate initialization.");
+    return;
+}
+window.__ANTIGRAVITY_BRIDGE_LOADED__ = true;
+
 const BRIDGE_VERSION = "2.6";
 
 // Ignore non-chat subpages (like Gemini usage/settings pages)
@@ -696,3 +703,5 @@ async function askWebProvider(text) {
 if (isTabDedicated) {
     connectBridge();
 }
+
+})();
