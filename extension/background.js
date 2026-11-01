@@ -55,8 +55,7 @@ function connectControlSocket() {
                 type: "register_bg",
                 version: BRIDGE_VERSION
             }));
-            // Immediately scan and wake up any existing AI tab so it auto-connects
-            ensureActiveTab({ preferredProvider: null, excludeProviders: [], openIfMissing: false });
+            // Only wake tabs when explicitly requested by an incoming task
         };
 
         controlSocket.onmessage = async (event) => {
