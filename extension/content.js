@@ -26,11 +26,11 @@ const PROVIDERS = {
     "chatgpt.com": {
         key: "chatgpt",
         name: "ChatGPT",
-        input: '#prompt-textarea, div.ProseMirror[contenteditable="true"], [contenteditable="true"][ translate="no"], textarea[name="prompt-textarea"], textarea',
+        input: '#prompt-textarea, div.ProseMirror[contenteditable="true"], [contenteditable="true"][translate="no"], textarea[name="prompt-textarea"], textarea',
         sendBtn: 'button[data-testid="send-button"], button[aria-label*="Send prompt" i], button[aria-label*="Send" i], form button[type="submit"]',
         stopBtn: 'button[data-testid="stop-button"], button[aria-label*="Stop streaming" i], button[aria-label*="Stop" i]',
-        response: '[data-message-author-role="assistant"] .markdown, [data-message-author-role="assistant"], article [data-message-author-role="assistant"], div.agent-turn .markdown',
-        userExclude: '[data-message-author-role="user"]',
+        response: '[data-message-author-role="assistant"] .markdown, [data-message-author-role="assistant"], div.agent-turn .markdown, article[data-testid^="conversation-turn-"] .markdown',
+        userExclude: '[data-message-author-role="user"], .user-turn',
         modelBtn: 'button[data-testid="model-switcher-dropdown-button"], button[aria-label*="Model selector" i], [aria-haspopup="menu"][id*="radix-"]',
         modelItem: '[role="menuitem"], [role="option"], [data-testid*="model-switcher-"]',
         rateLimitRegex: /you['’]?ve reached your.*limit|you['’]?ve hit the.*limit|too many requests|usage cap|responses will use another model until|upgrade to plus/i
@@ -108,6 +108,10 @@ try {
     });
 } catch (e) {}
 
+const oldBtn = document.getElementById('antigravity-bridge-status-btn');
+if (oldBtn) {
+    try { oldBtn.remove(); } catch (e) {}
+}
 const statusBtn = document.createElement('div');
 statusBtn.id = 'antigravity-bridge-status-btn';
 statusBtn.style.cssText = `
@@ -529,7 +533,7 @@ async function askWebProvider(text) {
             if (provider.userExclude && target.closest(provider.userExclude)) continue;
 
             const block = target.closest(
-                'message-content, .model-response-text, [data-is-streaming], .font-claude-message, .font-claude-response, [class*="font-claude"], .standard-markdown, .progressive-markdown, .markdown, [data-message-author-role="assistant"], article [data-message-author-role="assistant"], .ds-markdown, .prose'
+                'message-content, .model-response-text, [data-is-streaming], .font-claude-message, .font-claude-response, [class*="font-claude"], .standard-markdown, .progressive-markdown, .markdown, [data-message-author-role="assistant"], [data-testid^="conversation-turn-"], .agent-turn, .ds-markdown, .prose'
             );
             if (block && !preSet.has(block) && !block.closest(UI_CHROME_EXCLUDE)) {
                 mutatedContainers.add(block);

@@ -127,6 +127,20 @@ wss.on("connection", (ws) => {
 
             if (parsed.type === "log") {
                 logToFile(`[BROWSER] ${parsed.msg}`);
+                // If an existing v2.4/v2.5 tab connects and sends a log message, register it immediately!
+                if (!ws.isBgWorker && browserSocket !== ws) {
+                    ws.isTab = true;
+                    const m = /Connected from (https?:\/\/[^\s]+)/i.exec(parsed.msg || "");
+                    if (m) {
+                        const url = m[1].toLowerCase();
+                        if (url.includes("gemini.google.com")) ws.provider = "gemini";
+                        else if (url.includes("chatgpt.com")) ws.provider = "chatgpt";
+                        else if (url.includes("claude.ai")) ws.provider = "claude";
+                        else if (url.includes("deepseek.com")) ws.provider = "deepseek";
+                    }
+                    browserSocket = ws;
+                    notifyTabWaiters(ws);
+                }
                 return;
             }
 
@@ -323,6 +337,7 @@ async function queryConnectedTab(bundle) {
         }
 
         browserSocket.on("message", onSessionMsg);
+        // Support both v2.6 ({ type: "prompt" }) and v2.4/v2.5 (which checked data.type === "check_session")
         browserSocket.send(JSON.stringify({ type: "check_session" }));
     });
 

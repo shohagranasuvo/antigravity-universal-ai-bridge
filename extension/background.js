@@ -33,6 +33,14 @@ function logBg(msg) {
     } catch (e) {}
 }
 
+function getHostname(urlStr) {
+    try {
+        return new URL(urlStr).hostname.toLowerCase();
+    } catch (e) {
+        return "";
+    }
+}
+
 function connectControlSocket() {
     if (controlSocket && (controlSocket.readyState === WebSocket.OPEN || controlSocket.readyState === WebSocket.CONNECTING)) {
         return;
@@ -95,12 +103,15 @@ async function ensureActiveTab({ preferredProvider = null, excludeProviders = []
         const excludedSet = new Set((excludeProviders || []).map(p => p.toLowerCase()));
         const allTabs = await chrome.tabs.query({});
 
-        // Find matching AI tabs that are not in excludeProviders
+        // Strictly check actual hostname so ?utm_source=chatgpt.com on github.com is NEVER matched!
         const matchingTabs = [];
         for (const tab of allTabs) {
             const url = tab.url || "";
+            const hostname = getHostname(url);
+            if (!hostname) continue;
+
             for (const p of PROVIDER_PATTERNS) {
-                if (url.includes(p.host) && !excludedSet.has(p.key)) {
+                if ((hostname === p.host || hostname.endsWith("." + p.host)) && !excludedSet.has(p.key)) {
                     // Skip non-chat pages on Gemini like /usage or /extensions
                     if (p.key === "gemini" && /\/(usage|extensions|updates|saved-info|gems)/i.test(url)) {
                         continue;
@@ -127,7 +138,18 @@ async function ensureActiveTab({ preferredProvider = null, excludeProviders = []
                 });
                 return;
             } catch (err) {
-                logBg(`Tab ${chosen.tab.id} content script not ready, reloading tab...`);
+                logBg(`Injecting v2.6 content.js into tab ${chosen.tab.id} (${chosen.providerKey})...`);
+                try {
+                    if (chrome.scripting) {
+                        await chrome.scripting.executeScript({
+                            target: { tabId: chosen.tab.id },
+                            files: ["content.js"]
+                        });
+                        return;
+                    }
+                } catch (injectErr) {
+                    logBg(`executeScript fallback to reload: ${injectErr.message}`);
+                }
                 await chrome.tabs.reload(chosen.tab.id);
                 return;
             }
@@ -168,8 +190,9 @@ chrome.runtime.onStartup.addListener(() => {
 
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
     if (changeInfo.status === "complete" && tab.url) {
+        const hostname = getHostname(tab.url);
         for (const p of PROVIDER_PATTERNS) {
-            if (tab.url.includes(p.host)) {
+            if (hostname === p.host || hostname.endsWith("." + p.host)) {
                 connectControlSocket();
                 break;
             }
