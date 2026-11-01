@@ -29,7 +29,7 @@ const PROVIDERS = {
         input: '#prompt-textarea, div.ProseMirror[contenteditable="true"], [contenteditable="true"][translate="no"], textarea[name="prompt-textarea"], textarea',
         sendBtn: 'button[data-testid="send-button"], button[aria-label*="Send prompt" i], button[aria-label*="Send" i], form button[type="submit"]',
         stopBtn: 'button[data-testid="stop-button"], button[aria-label*="Stop streaming" i], button[aria-label*="Stop" i]',
-        response: '[data-message-author-role="assistant"] .markdown, [data-message-author-role="assistant"], div.agent-turn .markdown, article[data-testid^="conversation-turn-"] .markdown, article [data-message-author-role="assistant"], .markdown.prose, [data-testid="conversation-turn-3"] .markdown',
+        response: '[data-message-author-role="assistant"], [data-testid^="conversation-turn-"] [data-message-author-role="assistant"], div.agent-turn, .markdown.prose, [data-message-author-role="assistant"] .markdown',
         userExclude: '[data-message-author-role="user"], .user-turn',
         modelBtn: 'button[data-testid="model-switcher-dropdown-button"], button[aria-label*="Model selector" i], [aria-haspopup="menu"][id*="radix-"]',
         modelItem: '[role="menuitem"], [role="option"], [data-testid*="model-switcher-"]',
@@ -202,8 +202,6 @@ function getValidResponseNodes() {
         if (statusBtn.contains(el)) return false;
         if (el.closest(UI_CHROME_EXCLUDE)) return false;
         if (provider.userExclude && el.closest(provider.userExclude)) return false;
-        // Avoid matching both parent [data-message-author-role="assistant"] and child .markdown
-        if (raw.some(other => other !== el && el.contains(other))) return false;
         return true;
     });
 }
