@@ -205,7 +205,7 @@ function openUrlInOSBrowser(url) {
 /**
  * Ensure an AI tab is open and connected; auto-launches one if needed!
  */
-async function ensureConnectedTab({ preferredProvider = null, excludeProviders = [], forceSwitch = false, timeoutMs = 15000 } = {}) {
+async function ensureConnectedTab({ preferredProvider = null, excludeProviders = [], forceSwitch = false, timeoutMs = 35000 } = {}) {
     if (!forceSwitch && browserSocket && browserSocket.readyState === 1) {
         if (!excludeProviders.includes(browserSocket.provider)) {
             return browserSocket;
@@ -466,12 +466,12 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         const excludedProviders = [];
 
         // Ensure a tab is open & connected automatically (zero manual intervention!)
-        let activeWs = await ensureConnectedTab({ excludeProviders: excludedProviders, timeoutMs: 15000 });
+        let activeWs = await ensureConnectedTab({ excludeProviders: excludedProviders, timeoutMs: 35000 });
         if (!activeWs || activeWs.readyState !== 1) {
             return {
                 content: [{
                     type: "text",
-                    text: "Error: Could not auto-connect to a browser tab within 15s. Please make sure Chrome/Brave is open with the Antigravity Bridge v2.6 extension loaded."
+                    text: "Error: Could not auto-connect to a browser tab within 35s. Please make sure Chrome/Brave is open with the Antigravity Bridge v2.6 extension loaded."
                 }]
             };
         }
@@ -491,7 +491,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
             activeWs = await ensureConnectedTab({
                 excludeProviders: excludedProviders,
                 forceSwitch: true,
-                timeoutMs: 15000
+                timeoutMs: 35000
             });
 
             if (activeWs && activeWs.readyState === 1) {

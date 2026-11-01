@@ -19,7 +19,7 @@ const PROVIDERS = {
         stopBtn: 'button[aria-label*="Stop" i]',
         response: 'message-content, .model-response-text, [data-message-author-role="model"]',
         userExclude: 'user-query, .user-query, [class*="user-query"], [data-message-author-role="user"]',
-        modelBtn: 'button[data-test-id*="model" i], button[aria-label*="model" i], .input-area-switch, [class*="model-picker"] button',
+        modelBtn: 'button[data-test-id*="bard-mode-menu-button" i], [data-test-id*="model" i] button, [class*="model-picker"] button, button[aria-label*="Switch model" i], .input-area-switch',
         modelItem: '[role="menuitem"], [role="option"], .mat-mdc-menu-item',
         rateLimitRegex: /you['’]?ve reached your.*limit|quota exceeded|try again later|too many requests|upgrade to gemini advanced/i
     },
