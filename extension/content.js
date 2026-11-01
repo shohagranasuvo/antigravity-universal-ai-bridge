@@ -29,7 +29,7 @@ const PROVIDERS = {
         input: '#prompt-textarea, div.ProseMirror[contenteditable="true"], [contenteditable="true"][translate="no"], textarea[name="prompt-textarea"], textarea',
         sendBtn: 'button[data-testid="send-button"], button[aria-label*="Send prompt" i], button[aria-label*="Send" i], form button[type="submit"]',
         stopBtn: 'button[data-testid="stop-button"], button[aria-label*="Stop streaming" i], button[aria-label*="Stop" i]',
-        response: '[data-message-author-role="assistant"] .markdown, [data-message-author-role="assistant"], div.agent-turn .markdown, article[data-testid^="conversation-turn-"] .markdown',
+        response: '[data-message-author-role="assistant"] .markdown, [data-message-author-role="assistant"], div.agent-turn .markdown, article[data-testid^="conversation-turn-"] .markdown, article [data-message-author-role="assistant"], .markdown.prose, [data-testid="conversation-turn-3"] .markdown',
         userExclude: '[data-message-author-role="user"], .user-turn',
         modelBtn: 'button[data-testid="model-switcher-dropdown-button"], button[aria-label*="Model selector" i], [aria-haspopup="menu"][id*="radix-"]',
         modelItem: '[role="menuitem"], [role="option"], [data-testid*="model-switcher-"]',
@@ -595,18 +595,17 @@ async function askWebProvider(text) {
                 break;
             }
 
-            // Engine 2: Fallback to MutationObserver containers
-            if (!latestResponse && mutatedContainers.size > 0) {
-                const arr = Array.from(mutatedContainers);
-                for (let i = arr.length - 1; i >= 0; i--) {
-                    const el = arr[i];
-                    if (!document.body.contains(el) || preSet.has(el)) continue;
-                    if (el.closest(UI_CHROME_EXCLUDE)) continue;
-                    const candidateText = cleanResponseText(el.innerText || el.textContent || "");
-                    if (!candidateText) continue;
-                    if (promptSnippet.length > 15 && candidateText.includes(promptSnippet)) continue;
-                    latestResponse = candidateText;
-                    break;
+            if (!latestResponse) {
+                // Engine 3: Emergency query across all conversation turns excluding user
+                const turns = Array.from(document.querySelectorAll('article[data-testid^="conversation-turn-"], [data-message-author-role="assistant"]'));
+                for (let i = turns.length - 1; i >= 0; i--) {
+                    const turn = turns[i];
+                    if (preSet.has(turn) || turn.closest(provider.userExclude)) continue;
+                    const txt = cleanResponseText(turn.innerText || "");
+                    if (txt && (!promptSnippet || !txt.includes(promptSnippet))) {
+                        latestResponse = txt;
+                        break;
+                    }
                 }
             }
 
